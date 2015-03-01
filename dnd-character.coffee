@@ -18,6 +18,9 @@ List item types:                        list <type>\n
     msg.send helpText
 
   robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
+    msg.send rollCharacter()
+
+  rollCharacter = ->
     adjectives = robot.brain.get('dndAdjectives') or ['tough']
     races = robot.brain.get('dndRaces') or ['elf']
     classes = robot.brain.get('dndClasses') or ['ranger']
@@ -28,7 +31,15 @@ List item types:                        list <type>\n
     dclass = classes[Math.floor(Math.random() * classes.length)]
     location = locations[Math.floor(Math.random() * locations.length)]
     backstory = backstories[Math.floor(Math.random() * backstories.length)]
-    msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
+    "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
+
+  robot.respond /(roll us some|create us some|who are our) characters/i, (msg) ->
+    msg.send "The intrepid souls of '#{msg.message.user.room}' ...:"
+    for own key, user of robot.brain.users when user.name != robot.name
+      #user = "#{user.name}" if "#{user.name}" != robot.name
+      char = rollCharacter()
+      msg.send "  #{user.name}, the #{char}"
+    msg.send "  ... have banded together to brave the odds in search of The Quest for the Meanigful MacGuffin!"
 
   robot.respond /add (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
     adjectives = robot.brain.get('dndAdjectives') or ['tough']
