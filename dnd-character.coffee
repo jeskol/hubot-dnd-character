@@ -66,7 +66,6 @@ module.exports = (robot) ->
         if content not in db
             db.push content
             robot.brain.set dbName, db
-            robot.brain.save()
             msg.reply "Added new #{key}: '#{content}'"
 
         else
@@ -77,7 +76,6 @@ module.exports = (robot) ->
         if index > -1
             db.splice index, 1
             robot.brain.set dbName, db
-            robot.brain.save()
             msg.reply "Removed '#{content}' from #{key}"
 
         else
