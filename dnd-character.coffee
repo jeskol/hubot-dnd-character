@@ -72,21 +72,16 @@ module.exports = (robot) ->
         else
             msg.reply "Error: '#{content}' already in #{key}"
 
-    robot.respond /remove (\w+) "([^\"]+)"/i, (msg) ->
-        [_, key, content] = msg.match
-        dbName = keyToDb[key]
-        return msg.reply("Error: key not valid: '#{key}'") if not dbName
-
-        db = getDb dbName
+    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey (msg, content, key, dbName, db) ->
         index = db.indexOf content
         if index > -1
             db.splice index, 1
             robot.brain.set dbName, db
             robot.brain.save()
-            msg.reply "Removed '#{content}' from #{dbName}"
+            msg.reply "Removed '#{content}' from #{key}"
 
         else
-            msg.reply "Couldn't find '#{content}' in #{dbName}"
+            msg.reply "Couldn't find '#{content}' in #{key}"
 
     robot.respond /list (\w+)/i, (msg) ->
         [_, key] = msg.match
