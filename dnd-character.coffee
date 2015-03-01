@@ -49,7 +49,6 @@ module.exports = (robot) ->
     robot.respond /add (\w+) "([^\"]+)"/i, (msg) ->
         [_, key, content] = msg.match
         dbName = keyToDb[key]
-
         return msg.reply("Error: key not valid: '#{key}'") if not dbName
 
         db = getDb dbName
@@ -57,16 +56,26 @@ module.exports = (robot) ->
             db.push content
             robot.brain.set key, db
             robot.brain.save()
-            msg.reply "Added new #{key}: #{content}"
+            msg.reply "Added new #{key}: '#{content}'"
 
         else
-            msg.reply "Error: Duplicate value"
+            msg.reply "Error: '#{content}' already in #{key}"
 
     robot.respond /remove (\w+) "([^\"]+)"/i, (msg) ->
         [_, key, content] = msg.match
         dbName = keyToDb[key]
-
         return msg.reply("Error: key not valid: '#{key}'") if not dbName
+
+        db = getDb dbName
+        index = db.indexOf content
+        if index > -1
+            db.splice index, 1
+            robot.brain.set dbName, db
+            robot.brain.save()
+            msg.reply "Removed '#{content}' from #{dbName}"
+
+        else
+            msg.reply "Couldn't find '#{content}' in #{dbName}"
 
     robot.respond /remove (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
         adjectives = robot.brain.get('dndAdjectives') or ['tough']
