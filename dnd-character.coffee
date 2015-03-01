@@ -14,6 +14,13 @@ List item types:                        list <type>\n
 ```'
 
 module.exports = (robot) ->
+    keyToDb =
+        'adjective': 'dndAdjectives'
+        'race': 'dndRaces'
+        'class': 'dndClasses'
+        'location': 'dndLocations'
+        'backstory': 'dndBackstories'
+
     defaults =
         dndAdjectives: "tough"
         dndRaces: "elf"
