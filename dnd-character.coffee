@@ -21,6 +21,13 @@ module.exports = (robot) ->
         'location': 'dndLocations'
         'backstory': 'dndBackstories'
 
+    pluralize =
+        'adjective': 'Adjectives'
+        'race': 'Races'
+        'class': 'Classes'
+        'location': 'Locations'
+        'backstory': 'Backstories'
+
     defaults =
         dndAdjectives: "tough"
         dndRaces: "elf"
@@ -77,25 +84,10 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{dbName}"
 
-    robot.respond /list (adjective|race|class|location|backstory)/i, (msg) ->
-        adjectives = robot.brain.get('dndAdjectives') or ['tough']
-        races = robot.brain.get('dndRaces') or ['elf']
-        classes = robot.brain.get('dndClasses') or ['ranger']
-        locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-        backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-        newtype = msg.match[1]
-        if newtype is 'adjective'
-            dndResponse = "Adjectives:\n```\"" + adjectives.join('"\n"') + "\"```"
-            msg.send dndResponse
-        if newtype is 'race'
-            dndResponse = "Races:\n```\"" + races.join('"\n"') + "\"```"
-            msg.send dndResponse
-        if newtype is 'class'
-            dndResponse = "Classes:\n```\"" + classes.join('"\n"') + "\"```"
-            msg.send dndResponse
-        if newtype is 'location'
-            dndResponse = "Locations:\n```\"" + locations.join('"\n"') + "\"```"
-            msg.send dndResponse
-        if newtype is 'backstory'
-            dndResponse = "Backstories:\n```\"" + backstories.join('"\n"') + "\"```"
-            msg.send dndResponse
+    robot.respond /list (\w+)/i, (msg) ->
+        [_, key] = msg.match
+        dbName = keyToDb[key]
+        return msg.reply("Error: key not valid: '#{key}'") if not dbName
+
+        db = getDb dbName
+        msg.send "#{pluralize[key]}:\n```'#{ db.join('\n') }'\n```"
