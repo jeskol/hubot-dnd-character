@@ -47,8 +47,7 @@ module.exports = (robot) ->
         msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
 
     robot.respond /add (\w+) "([^\"]+)"/i, (msg) ->
-        key = msg.match[1]
-        content = msg.match[2]
+        [_, key, content] = msg.match
         dbName = keyToDb[key]
 
         return msg.reply("Error: key not valid: '#{key}'") if not dbName
@@ -62,6 +61,12 @@ module.exports = (robot) ->
 
         else
             msg.reply "Error: Duplicate value"
+
+    robot.respond /remove (\w+) "([^\"]+)"/i, (msg) ->
+        [_, key, content] = msg.match
+        dbName = keyToDb[key]
+
+        return msg.reply("Error: key not valid: '#{key}'") if not dbName
 
     robot.respond /remove (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
         adjectives = robot.brain.get('dndAdjectives') or ['tough']
