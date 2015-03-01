@@ -15,20 +15,29 @@ List item types:                        list <type>\n
 
 module.exports = (robot) ->
 
+  defaults =
+      dndAdjectives: "tough"
+      dndRaces: "elf"
+      dndClasses: "ranger"
+      dndLocations: "the woodland kingdoms"
+      dndBackstories: "doesn't take shit from anyone"
+
+  getDb = (dbName) ->
+      robot.brain.get(dbName) or [ defaults[dbname] ]
+
+  randItem = (list) ->
+      list[Math.floor(Math.random() * list.length)]
+
   robot.respond /character help/i, (msg) ->
     msg.send helpText
 
   robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
-    adjectives = robot.brain.get('dndAdjectives') or ['tough']
-    races = robot.brain.get('dndRaces') or ['elf']
-    classes = robot.brain.get('dndClasses') or ['ranger']
-    locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-    backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-    adj = adjectives[Math.floor(Math.random() * adjectives.length)]
-    race = races[Math.floor(Math.random() * races.length)]
-    dclass = classes[Math.floor(Math.random() * classes.length)]
-    location = locations[Math.floor(Math.random() * locations.length)]
-    backstory = backstories[Math.floor(Math.random() * backstories.length)]
+    adj = randItem getDb 'dndAdjectives'
+    race = randItem getDb 'dndRaces'
+    dclass = randItem getDb 'dndClasses'
+    location = randItem getDb 'dndLocations'
+    backstory = randItem getDb 'dndBackstories'
+
     msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
 
   robot.respond /add (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
