@@ -81,10 +81,5 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{key}"
 
-    robot.respond /list (\w+)/i, (msg) ->
-        [_, key] = msg.match
-        dbName = keyToDb[key]
-        return msg.reply("Error: key not valid: '#{key}'") if not dbName
-
-        db = getDb dbName
+    robot.respond /list (\w+)/i, respondToKey (msg, content, key, dbName, db) ->
         msg.send "#{pluralize[key]}:\n```'#{ db.join('\n') }'\n```"
