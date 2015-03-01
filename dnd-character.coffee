@@ -3,10 +3,7 @@
 # Notes:
 #   Put the help here
 
-module.exports = (robot) ->
-
-  robot.respond /character help/i, (msg) ->
-    helpText = '```
+helpText = '```
 Create a randomized character idea:     who is my character\n
 Add or remove character adjective:      (add|remove) adjective "<adjective>"\n
 Add or remove character race:           (add|remove) race "<race>"\n
@@ -15,6 +12,10 @@ Add or remove character location:       (add|remove) location "<location>"\n
 Add or remove character backstory:      (add|remove) backstory "<backstory>"\n
 List item types:                        list <type>\n
 ```'
+
+module.exports = (robot) ->
+
+  robot.respond /character help/i, (msg) ->
     msg.send helpText
 
   robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
