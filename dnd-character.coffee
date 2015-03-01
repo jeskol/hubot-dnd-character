@@ -3,15 +3,15 @@
 # Notes:
 #   Put the help here
 
-helpText = '```
-Create a randomized character idea:     who is my character\n
-Add or remove character adjective:      (add|remove) adjective "<adjective>"\n
-Add or remove character race:           (add|remove) race "<race>"\n
-Add or remove character class:          (add|remove) class "<class>"\n
-Add or remove character location:       (add|remove) location "<location>"\n
-Add or remove character backstory:      (add|remove) backstory "<backstory>"\n
-List item types:                        list <type>\n
-```'
+helpText = """```
+Create a randomized character idea:     who is my character
+Add or remove character adjective:      (add|remove) adjective "<adjective>"
+Add or remove character race:           (add|remove) race "<race>"
+Add or remove character class:          (add|remove) class "<class>"
+Add or remove character location:       (add|remove) location "<location>"
+Add or remove character backstory:      (add|remove) backstory "<backstory>"
+List item types:                        list <type>
+```"""
 
 module.exports = (robot) ->
     keyToDb =
