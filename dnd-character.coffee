@@ -51,10 +51,7 @@ module.exports = (robot) ->
         content = msg.match[2]
         dbName = keyToDb[key]
 
-        if not dbName
-            return msg.reply "Error: key not valid: '#{key}'"
-        if not content
-            return msg.reply "Error: new content can't be empty"
+        return msg.reply("Error: key not valid: '#{key}'") if not dbName
 
         db = getDb dbName
         if content not in db
