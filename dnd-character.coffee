@@ -41,6 +41,15 @@ module.exports = (robot) ->
     randItem = (list) ->
         list[Math.floor(Math.random() * list.length)]
 
+    respondToKey = (cb) ->
+        (msg) ->
+            [_, key, content] = msg.match
+            dbName = keyToDb[key]
+            return msg.reply("Error: key not valid: '#{key}'") if not dbName
+
+            db = getDb dbName
+            cb(msg, content, key, dbName, db)
+
     robot.respond /character help/i, (msg) ->
         msg.send helpText
 
@@ -53,15 +62,10 @@ module.exports = (robot) ->
 
         msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
 
-    robot.respond /add (\w+) "([^\"]+)"/i, (msg) ->
-        [_, key, content] = msg.match
-        dbName = keyToDb[key]
-        return msg.reply("Error: key not valid: '#{key}'") if not dbName
-
-        db = getDb dbName
+    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey (msg, content, key, dbName, db) ->
         if content not in db
             db.push content
-            robot.brain.set key, db
+            robot.brain.set dbName, db
             robot.brain.save()
             msg.reply "Added new #{key}: '#{content}'"
 
