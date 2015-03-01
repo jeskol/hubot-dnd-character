@@ -13,28 +13,28 @@ Add or remove character backstory:      (add|remove) backstory "<backstory>"
 List item types:                        list <type>
 ```"""
 
+keyToDb =
+    'adjective': 'dndAdjectives'
+    'race': 'dndRaces'
+    'class': 'dndClasses'
+    'location': 'dndLocations'
+    'backstory': 'dndBackstories'
+
+pluralize =
+    'adjective': 'Adjectives'
+    'race': 'Races'
+    'class': 'Classes'
+    'location': 'Locations'
+    'backstory': 'Backstories'
+
+defaults =
+    dndAdjectives: "tough"
+    dndRaces: "elf"
+    dndClasses: "ranger"
+    dndLocations: "the woodland kingdoms"
+    dndBackstories: "doesn't take shit from anyone"
+
 module.exports = (robot) ->
-    keyToDb =
-        'adjective': 'dndAdjectives'
-        'race': 'dndRaces'
-        'class': 'dndClasses'
-        'location': 'dndLocations'
-        'backstory': 'dndBackstories'
-
-    pluralize =
-        'adjective': 'Adjectives'
-        'race': 'Races'
-        'class': 'Classes'
-        'location': 'Locations'
-        'backstory': 'Backstories'
-
-    defaults =
-        dndAdjectives: "tough"
-        dndRaces: "elf"
-        dndClasses: "ranger"
-        dndLocations: "the woodland kingdoms"
-        dndBackstories: "doesn't take shit from anyone"
-
     getDb = (dbName) ->
         robot.brain.get(dbName) or [ defaults[dbname] ]
 
