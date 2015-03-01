@@ -46,31 +46,25 @@ module.exports = (robot) ->
 
         msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
 
-    robot.respond /add (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
-        adjectives = robot.brain.get('dndAdjectives') or ['tough']
-        races = robot.brain.get('dndRaces') or ['elf']
-        classes = robot.brain.get('dndClasses') or ['ranger']
-        locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-        backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-        newtype = msg.match[1]
-        newcontent = msg.match[2]
-        if newtype is 'adjective' and newcontent not in adjectives
-            adjectives.push(newcontent)
-            robot.brain.set 'dndAdjectives', adjectives
-        if newtype is 'race' and newcontent not in races
-            races.push(newcontent)
-            robot.brain.set 'dndRaces', races
-        if newtype is 'class' and newcontent not in classes
-            classes.push(newcontent)
-            robot.brain.set 'dndClasses', classes
-        if newtype is 'location' and newcontent not in locations
-            locations.push(newcontent)
-            robot.brain.set 'dndLocations', locations
-        if newtype is 'backstory' and newcontent not in backstories
-            backstories.push(newcontent)
-            robot.brain.set 'dndBackstories', backstories
-        robot.brain.save
-        msg.reply "Added new #{newtype}: #{newcontent}"
+    robot.respond /add (\w+) "([^\"]+)"/i, (msg) ->
+        key = msg.match[1]
+        content = msg.match[2]
+        dbName = keyToDb[key]
+
+        if not dbName
+            return msg.reply "Error: key not valid: '#{key}'"
+        if not content
+            return msg.reply "Error: new content can't be empty"
+
+        db = getDb dbName
+        if content not in db
+            db.push content
+            robot.brain.set key, db
+            robot.brain.save()
+            msg.reply "Added new #{key}: #{content}"
+
+        else
+            msg.reply "Error: Duplicate value"
 
     robot.respond /remove (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
         adjectives = robot.brain.get('dndAdjectives') or ['tough']
