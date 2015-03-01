@@ -77,37 +77,6 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{dbName}"
 
-    robot.respond /remove (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
-        adjectives = robot.brain.get('dndAdjectives') or ['tough']
-        races = robot.brain.get('dndRaces') or ['elf']
-        classes = robot.brain.get('dndClasses') or ['ranger']
-        locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-        backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-        newtype = msg.match[1]
-        newcontent = msg.match[2]
-        if newtype is 'adjective'
-            itemIndex = adjectives.indexOf(newcontent)
-            adjectives.splice(itemIndex, 1)
-            robot.brain.set 'dndAdjectives', adjectives
-        if newtype is 'race'
-            itemIndex = races.indexOf(newcontent)
-            races.splice(itemIndex, 1)
-            robot.brain.set 'dndRaces', races
-        if newtype is 'class'
-            itemIndex = classes.indexOf(newcontent)
-            classes.splice(itemIndex, 1)
-            robot.brain.set 'dndClasses', classes
-        if newtype is 'location'
-            itemIndex = locations.indexOf(newcontent)
-            locations.splice(itemIndex, 1)
-            robot.brain.set 'dndLocations', locations
-        if newtype is 'backstory'
-            itemIndex = backstories.indexOf(newcontent)
-            backstories.splice(itemIndex, 1)
-            robot.brain.set 'dndBackstories', backstories
-        robot.brain.save
-        msg.reply "Removed #{newtype}: #{newcontent}"
-
     robot.respond /list (adjective|race|class|location|backstory)/i, (msg) ->
         adjectives = robot.brain.get('dndAdjectives') or ['tough']
         races = robot.brain.get('dndRaces') or ['elf']
