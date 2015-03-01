@@ -28,54 +28,64 @@ pluralize =
     'backstory': 'Backstories'
 
 defaults =
-    dndAdjectives: "tough"
-    dndRaces: "elf"
-    dndClasses: "ranger"
-    dndLocations: "the woodland kingdoms"
-    dndBackstories: "doesn't take shit from anyone"
+    'adjective': "tough"
+    'race': "elf"
+    'class': "ranger"
+    'location': "the woodland kingdoms"
+    'backstory': "doesn't take shit from anyone"
 
 randItem = (list) ->
     list[Math.floor(Math.random() * list.length)]
 
 module.exports = (robot) ->
-    getDb = (dbName) ->
-        robot.brain.get(dbName) or [ defaults[dbname] ]
+    getDb = (key) ->
+        dbName = keyToDb[key]
+        if dbName
+            robot.brain.get(dbName) or [ defaults[key] ]
+        else
+            null
+
+    saveDb = (key, db) ->
+        dbname = keyToDb[key]
+        if dbname
+            robot.brain.set dbName, db
 
     respondToKey = (cb) ->
         (msg) ->
             [_, key, content] = msg.match
-            dbName = keyToDb[key]
-            return msg.reply("Error: key not valid: '#{key}'") if not dbName
+            db = getDb key
 
-            db = getDb dbName
-            cb({msg, content, key, dbName, db})
+            if not db
+                msg.reply "Error: key not valid: '#{key}'"
+            else
+                cb {msg, content, key, db}
 
     robot.respond /character help/i, (msg) ->
         msg.send helpText
 
     robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
-        adj = randItem getDb 'dndAdjectives'
-        race = randItem getDb 'dndRaces'
-        dclass = randItem getDb 'dndClasses'
-        location = randItem getDb 'dndLocations'
-        backstory = randItem getDb 'dndBackstories'
+        adj = randItem getDb 'adjective'
+        race = randItem getDb 'race'
+        dclass = randItem getDb 'class'
+        location = randItem getDb 'location'
+        backstory = randItem getDb 'backstory'
 
         msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
 
-    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, dbName, db}) ->
+    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         if content not in db
             db.push content
-            robot.brain.set dbName, db
+            saveDb key, db
             msg.reply "Added new #{key}: '#{content}'"
 
         else
             msg.reply "Error: '#{content}' already in #{key}"
 
-    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, dbName, db}) ->
+    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         index = db.indexOf content
         if index > -1
             db.splice index, 1
-            robot.brain.set dbName, db
+            saveDb key, db
             msg.reply "Removed '#{content}' from #{key}"
 
         else
