@@ -48,7 +48,7 @@ module.exports = (robot) ->
             return msg.reply("Error: key not valid: '#{key}'") if not dbName
 
             db = getDb dbName
-            cb(msg, content, key, dbName, db)
+            cb({msg, content, key, dbName, db})
 
     robot.respond /character help/i, (msg) ->
         msg.send helpText
@@ -62,7 +62,7 @@ module.exports = (robot) ->
 
         msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
 
-    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey (msg, content, key, dbName, db) ->
+    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, dbName, db}) ->
         if content not in db
             db.push content
             robot.brain.set dbName, db
@@ -71,7 +71,7 @@ module.exports = (robot) ->
         else
             msg.reply "Error: '#{content}' already in #{key}"
 
-    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey (msg, content, key, dbName, db) ->
+    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, dbName, db}) ->
         index = db.indexOf content
         if index > -1
             db.splice index, 1
@@ -81,5 +81,5 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{key}"
 
-    robot.respond /list (\w+)/i, respondToKey (msg, content, key, dbName, db) ->
+    robot.respond /list (\w+)/i, respondToKey ({msg, key, db}) ->
         msg.send "#{pluralize[key]}:\n```'#{ db.join('\n') }'\n```"
