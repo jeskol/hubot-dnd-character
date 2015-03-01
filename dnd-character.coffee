@@ -34,12 +34,12 @@ defaults =
     dndLocations: "the woodland kingdoms"
     dndBackstories: "doesn't take shit from anyone"
 
+randItem = (list) ->
+    list[Math.floor(Math.random() * list.length)]
+
 module.exports = (robot) ->
     getDb = (dbName) ->
         robot.brain.get(dbName) or [ defaults[dbname] ]
-
-    randItem = (list) ->
-        list[Math.floor(Math.random() * list.length)]
 
     respondToKey = (cb) ->
         (msg) ->
