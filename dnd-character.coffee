@@ -48,7 +48,7 @@ module.exports = (robot) ->
     saveDb = (key, db) ->
         dbname = keyToDb[key]
         if dbname
-            robot.brain.set dbName, db
+            robot.brain.set dbname, db
 
     respondToKey = (cb) ->
         (msg) ->
