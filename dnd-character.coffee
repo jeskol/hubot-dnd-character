@@ -63,14 +63,25 @@ module.exports = (robot) ->
     robot.respond /character help/i, (msg) ->
         msg.send helpText
 
-    robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
+    rollCharacter = ->
         adj = randItem getDb 'adjective'
         race = randItem getDb 'race'
         dclass = randItem getDb 'class'
         location = randItem getDb 'location'
         backstory = randItem getDb 'backstory'
 
-        msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
+        "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
+
+    robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
+        msg.send rollCharacter()
+
+    robot.respond /(roll us some|create us some|who are our) characters/i, (msg) ->
+        msg.send "The intrepid souls of '#{msg.message.user.room}' ..."
+        for own key, user of robot.brain.users when user.name != robot.name
+            #user = "#{user.name}" if "#{user.name}" != robot.name
+            char = rollCharacter()
+            msg.send "  #{user.name}, the #{char}"
+        msg.send "  ... have banded together to brave the odds in search of The Quest for the Meanigful MacGuffin!"
 
     robot.respond /add (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         if content not in db
