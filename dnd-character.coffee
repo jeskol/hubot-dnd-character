@@ -3,109 +3,93 @@
 # Notes:
 #   Put the help here
 
+helpText = """```
+Create a randomized character idea:     who is my character
+Add or remove character adjective:      (add|remove) adjective "<adjective>"
+Add or remove character race:           (add|remove) race "<race>"
+Add or remove character class:          (add|remove) class "<class>"
+Add or remove character location:       (add|remove) location "<location>"
+Add or remove character backstory:      (add|remove) backstory "<backstory>"
+List item types:                        list <type>
+```"""
+
+keyToDb =
+    'adjective': 'dndAdjectives'
+    'race': 'dndRaces'
+    'class': 'dndClasses'
+    'location': 'dndLocations'
+    'backstory': 'dndBackstories'
+
+pluralize =
+    'adjective': 'Adjectives'
+    'race': 'Races'
+    'class': 'Classes'
+    'location': 'Locations'
+    'backstory': 'Backstories'
+
+defaults =
+    'adjective': "tough"
+    'race': "elf"
+    'class': "ranger"
+    'location': "the woodland kingdoms"
+    'backstory': "doesn't take shit from anyone"
+
+randItem = (list) ->
+    list[Math.floor(Math.random() * list.length)]
+
 module.exports = (robot) ->
+    getDb = (key) ->
+        dbName = keyToDb[key]
+        if dbName
+            robot.brain.get(dbName) or [ defaults[key] ]
+        else
+            null
 
-  robot.respond /character help/i, (msg) ->
-    helpText = '```
-Create a randomized character idea:     who is my character\n
-Add or remove character adjective:      (add|remove) adjective "<adjective>"\n
-Add or remove character race:           (add|remove) race "<race>"\n
-Add or remove character class:          (add|remove) class "<class>"\n
-Add or remove character location:       (add|remove) location "<location>"\n
-Add or remove character backstory:      (add|remove) backstory "<backstory>"\n
-List item types:                        list <type>\n
-```'
-    msg.send helpText
+    saveDb = (key, db) ->
+        dbname = keyToDb[key]
+        if dbname
+            robot.brain.set dbName, db
 
-  robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
-    adjectives = robot.brain.get('dndAdjectives') or ['tough']
-    races = robot.brain.get('dndRaces') or ['elf']
-    classes = robot.brain.get('dndClasses') or ['ranger']
-    locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-    backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-    adj = adjectives[Math.floor(Math.random() * adjectives.length)]
-    race = races[Math.floor(Math.random() * races.length)]
-    dclass = classes[Math.floor(Math.random() * classes.length)]
-    location = locations[Math.floor(Math.random() * locations.length)]
-    backstory = backstories[Math.floor(Math.random() * backstories.length)]
-    msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
+    respondToKey = (cb) ->
+        (msg) ->
+            [_, key, content] = msg.match
+            db = getDb key
 
-  robot.respond /add (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
-    adjectives = robot.brain.get('dndAdjectives') or ['tough']
-    races = robot.brain.get('dndRaces') or ['elf']
-    classes = robot.brain.get('dndClasses') or ['ranger']
-    locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-    backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-    newtype = msg.match[1]
-    newcontent = msg.match[2]
-    if newtype is 'adjective' and newcontent not in adjectives
-      adjectives.push(newcontent)
-      robot.brain.set 'dndAdjectives', adjectives
-    if newtype is 'race' and newcontent not in races
-      races.push(newcontent)
-      robot.brain.set 'dndRaces', races
-    if newtype is 'class' and newcontent not in classes
-      classes.push(newcontent)
-      robot.brain.set 'dndClasses', classes
-    if newtype is 'location' and newcontent not in locations
-      locations.push(newcontent)
-      robot.brain.set 'dndLocations', locations
-    if newtype is 'backstory' and newcontent not in backstories
-      backstories.push(newcontent)
-      robot.brain.set 'dndBackstories', backstories
-    robot.brain.save
-    msg.reply "Added new #{newtype}: #{newcontent}"
+            if not db
+                msg.reply "Error: key not valid: '#{key}'"
+            else
+                cb {msg, content, key, db}
 
-  robot.respond /remove (adjective|race|class|location|backstory) "([^\"]+)"/i, (msg) ->
-    adjectives = robot.brain.get('dndAdjectives') or ['tough']
-    races = robot.brain.get('dndRaces') or ['elf']
-    classes = robot.brain.get('dndClasses') or ['ranger']
-    locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-    backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-    newtype = msg.match[1]
-    newcontent = msg.match[2]
-    if newtype is 'adjective'
-      itemIndex = adjectives.indexOf(newcontent)
-      adjectives.splice(itemIndex, 1)
-      robot.brain.set 'dndAdjectives', adjectives
-    if newtype is 'race'
-      itemIndex = races.indexOf(newcontent)
-      races.splice(itemIndex, 1)
-      robot.brain.set 'dndRaces', races
-    if newtype is 'class'
-      itemIndex = classes.indexOf(newcontent)
-      classes.splice(itemIndex, 1)
-      robot.brain.set 'dndClasses', classes
-    if newtype is 'location'
-      itemIndex = locations.indexOf(newcontent)
-      locations.splice(itemIndex, 1)
-      robot.brain.set 'dndLocations', locations
-    if newtype is 'backstory'
-      itemIndex = backstories.indexOf(newcontent)
-      backstories.splice(itemIndex, 1)
-      robot.brain.set 'dndBackstories', backstories
-    robot.brain.save
-    msg.reply "Removed #{newtype}: #{newcontent}"
+    robot.respond /character help/i, (msg) ->
+        msg.send helpText
 
-  robot.respond /list (adjective|race|class|location|backstory)/i, (msg) ->
-    adjectives = robot.brain.get('dndAdjectives') or ['tough']
-    races = robot.brain.get('dndRaces') or ['elf']
-    classes = robot.brain.get('dndClasses') or ['ranger']
-    locations = robot.brain.get('dndLocations') or ['the woodland kingdoms']
-    backstories = robot.brain.get('dndBackstories') or ["doesn't take shit from anyone"]
-    newtype = msg.match[1]
-    if newtype is 'adjective'
-      dndResponse = "Adjectives:\n```\""+adjectives.join('"\n"')+"\"```"
-      msg.send dndResponse
-    if newtype is 'race'
-      dndResponse = "Races:\n```\""+races.join('"\n"')+"\"```"
-      msg.send dndResponse
-    if newtype is 'class'
-      dndResponse = "Classes:\n```\""+classes.join('"\n"')+"\"```"
-      msg.send dndResponse
-    if newtype is 'location'
-      dndResponse = "Locations:\n```\""+locations.join('"\n"')+"\"```"
-      msg.send dndResponse
-    if newtype is 'backstory'
-      dndResponse = "Backstories:\n```\""+backstories.join('"\n"')+"\"```"
-      msg.send dndResponse
+    robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
+        adj = randItem getDb 'adjective'
+        race = randItem getDb 'race'
+        dclass = randItem getDb 'class'
+        location = randItem getDb 'location'
+        backstory = randItem getDb 'backstory'
+
+        msg.send "#{adj} #{race} #{dclass} from #{location} who #{backstory}."
+
+    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+        if content not in db
+            db.push content
+            saveDb key, db
+            msg.reply "Added new #{key}: '#{content}'"
+
+        else
+            msg.reply "Error: '#{content}' already in #{key}"
+
+    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+        index = db.indexOf content
+        if index > -1
+            db.splice index, 1
+            saveDb key, db
+            msg.reply "Removed '#{content}' from #{key}"
+
+        else
+            msg.reply "Couldn't find '#{content}' in #{key}"
+
+    robot.respond /list (\w+)/i, respondToKey ({msg, key, db}) ->
+        msg.send "#{pluralize[key]}:\n```'#{ db.join('\n') }'\n```"
