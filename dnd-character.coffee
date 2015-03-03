@@ -77,11 +77,10 @@ module.exports = (robot) ->
 
     robot.respond /(roll us some|create us some|who are our) characters/i, (msg) ->
         msg.send "The intrepid souls of '#{msg.message.user.room}' ..."
-        for own key, user of robot.brain.users when user.name != robot.name
-            #user = "#{user.name}" if "#{user.name}" != robot.name
+        for own key, user of robot.brain.users() when user.name != robot.name
             char = rollCharacter()
             msg.send "  #{user.name}, the #{char}"
-        msg.send "  ... have banded together to brave the odds in search of The Quest for the Meanigful MacGuffin!"
+        msg.send "... have banded together to brave the odds in search of The Quest for the Meanigful MacGuffin!"
 
     robot.respond /add (adjective|race|class|location|backstory) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         if content not in db
