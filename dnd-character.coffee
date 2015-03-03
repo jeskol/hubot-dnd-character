@@ -53,7 +53,7 @@ defaults =
     'deed': "save a kitten"
     'failure': "the prince cries himself to sleep"
     'weapon': "sword"
-    'property': "fire"
+    'property': "firey"
     'mineral': "steel"
 
 randItem = (list) ->
@@ -103,11 +103,11 @@ module.exports = (robot) ->
         "A #{adj} #{race} from #{location} asks the party to #{deed} before #{failure}!"
 
     rollWeapon = ->
-        adj = randItem getDb 'adjective'
+        location = randItem getDb 'location'
         weapon = randItem getDb 'weapon'
         property = randItem getDb 'property'
         mineral = randItem getDb 'mineral'
-        "You are wielding a #{adj} #{weapon} of #{property} forged of #{mineral}."
+        "You are wielding a #{property} #{mineral} #{weapon} forged in #{location}."
 
     robot.respond /(roll me a|create me a|who is my) character/i, (msg) ->
         msg.send rollCharacter()
