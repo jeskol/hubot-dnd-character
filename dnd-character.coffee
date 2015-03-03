@@ -13,9 +13,10 @@ Add or remove character class:          (add|remove) class "<class>"
 Add or remove character location:       (add|remove) location "<location>"
 Add or remove character backstory:      (add|remove) backstory "<backstory>"
 Add or remove quest deed:               (add|remove) deed "<deed>"
+Add or remove quest failure:            (add|remove) failure "<failure>"
 Add or remove weapon property:          (add|remove) property "<property>"
 Add of remove weapon mineral            (add|remove) mineral "<mineral>"
-Add or remove weapon:                   (add|remove) failure "<weapon>"
+Add or remove weapon:                   (add|remove) weapon "<weapon>"
 List item types:                        list <type>
 ```"""
 
@@ -124,7 +125,7 @@ module.exports = (robot) ->
     robot.respond /what am I wielding/i, (msg) ->
         msg.send rollWeapon()
 
-    robot.respond /add (adjective|race|class|location|backstory|deed|property|mineral|failure) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+    robot.respond /add (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         if content not in db
             db.push content
             saveDb key, db
@@ -133,7 +134,7 @@ module.exports = (robot) ->
         else
             msg.reply "Error: '#{content}' already in #{key}"
 
-    robot.respond /remove (adjective|race|class|location|backstory|deed|property|mineral|failure) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+    robot.respond /remove (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         index = db.indexOf content
         if index > -1
             db.splice index, 1
@@ -143,5 +144,5 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{key}"
 
-    robot.respond /list (adjective|race|class|location|backstory|deed|property|mineral|failure)/i, respondToKey ({msg, key, db}) ->
+    robot.respond /list (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon)/i, respondToKey ({msg, key, db}) ->
         msg.send "#{pluralize[key]}:\n```#{ db.join('\n') }\n```"
