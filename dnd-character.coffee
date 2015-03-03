@@ -83,7 +83,7 @@ module.exports = (robot) ->
             msg.send "  #{user.name}, the #{char}"
         msg.send "  ... have banded together to brave the odds in search of The Quest for the Meanigful MacGuffin!"
 
-    robot.respond /add (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+    robot.respond /add (adjective|race|class|location|backstory) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         if content not in db
             db.push content
             saveDb key, db
@@ -92,7 +92,7 @@ module.exports = (robot) ->
         else
             msg.reply "Error: '#{content}' already in #{key}"
 
-    robot.respond /remove (\w+) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+    robot.respond /remove (adjective|race|class|location|backstory) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         index = db.indexOf content
         if index > -1
             db.splice index, 1
@@ -102,5 +102,5 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{key}"
 
-    robot.respond /list (\w+)/i, respondToKey ({msg, key, db}) ->
-        msg.send "#{pluralize[key]}:\n```'#{ db.join('\n') }'\n```"
+    robot.respond /list (adjective|race|class|location|backstory)/i, respondToKey ({msg, key, db}) ->
+        msg.send "#{pluralize[key]}:\n```#{ db.join('\n') }\n```"
