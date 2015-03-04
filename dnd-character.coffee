@@ -31,7 +31,7 @@ keyToDb =
     'weapon': 'dndWeapon'
     'property': 'dndProperty'
     'mineral': 'dndMineral'
-    'wardrobe-adjective':'dndWardrobeAdjective'
+    'wardrobeAdjective':'dndWardrobeAdjective'
     'wardrobe':'dndWardrobe'
     'accessory':'dndAccessory'
 
@@ -58,7 +58,7 @@ defaults =
     'weapon': "sword"
     'property': "firey"
     'mineral': "steel"
-    'wardrobe-adjective':"sexy"
+    'wardrobeAdjective':"sexy"
     'wardrobe':"chainmail bikini"
     'accessory':"neon leg-warmers"
 
@@ -116,10 +116,10 @@ module.exports = (robot) ->
         "You are wielding a #{property} #{mineral} #{weapon} forged in #{location}."
 
     rollWardrobe = ->
-        wardrobe-adjective = randItem getDb 'wardrobe-adjective'
+        wardrobeAdjective = randItem getDb 'wardrobeAdjective'
         wardrobe = randItem getDb 'wardrobe'
         accessory = randItem getDb 'accessory'
-        "I'm wearing a #{wardrobe-adjective} #{wardrobe} with #{accessory}, just for you, big boy. ;)"
+        "I'm wearing a #{wardrobeAdjective} #{wardrobe} with #{accessory} just for you, big boy. ;)"
     
     robot.respond /what are you wearing/i, (msg) ->
         msg.send rollWardrobe()
@@ -140,7 +140,7 @@ module.exports = (robot) ->
     robot.respond /what am I wielding/i, (msg) ->
         msg.send rollWeapon()
 
-    robot.respond /add (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon|wardrobe-adjective|wardrobe|accessory) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+    robot.respond /add (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon|wardrobeAdjective|wardrobe|accessory) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         if content not in db
             db.push content
             saveDb key, db
@@ -149,7 +149,7 @@ module.exports = (robot) ->
         else
             msg.reply "Error: '#{content}' already in #{key}"
 
-    robot.respond /remove (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon) "rdrobe-adjective|wardrobe|accessory([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
+    robot.respond /remove (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon|wardrobeAdjective|wardrobe|accessory) "([^\"]+)"/i, respondToKey ({msg, content, key, db}) ->
         index = db.indexOf content
         if index > -1
             db.splice index, 1
@@ -159,5 +159,5 @@ module.exports = (robot) ->
         else
             msg.reply "Couldn't find '#{content}' in #{key}"
 
-    robot.respond /list (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon|wardrobe-adjective|wardrobe|accessory)/i, respondToKey ({msg, key, db}) ->
+    robot.respond /list (adjective|race|class|location|backstory|deed|failure|property|mineral|weapon|wardrobeAdjective|wardrobe|accessory)/i, respondToKey ({msg, key, db}) ->
         msg.send "#{pluralize[key]}:\n```#{ db.join('\n') }\n```"
